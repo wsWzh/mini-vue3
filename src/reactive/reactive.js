@@ -3,7 +3,7 @@ import { track, trigger } from "./effect";
 
 const proxyMap = new WeakMap();
 
-export function reactice(target) {
+export function reactive(target) {
     if (!isObject(target)) {
         console.warn(`target ${target} must be an object`);
         return target;
@@ -29,7 +29,7 @@ export function reactice(target) {
             //get 追踪依赖
             track(target, key)
             //特殊处理4 深层对象处理 vue2初始化递归整个对象
-            return isObject(res) ? reactice(res) : res
+            return isObject(res) ? reactive(res) : res
         },
         set(target, key, value, receiver) {
             let oldLength = target.length
