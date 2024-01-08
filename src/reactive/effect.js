@@ -1,20 +1,32 @@
+const effectStack = [] // 副作用函数栈(处理嵌套的effect)
 let activeEffect //记录当前活动的副作用
 
-
-export function effect(fn) {
+/**
+ *
+ * @param {function} fn
+ * @returns {function}
+ */
+export function effect(fn,options={}) {
     const effectFn = () => {
         try {
             activeEffect = effectFn
+            effectStack.push(effectFn)//记录到栈
             return fn()
         } finally {
-            // todo
+            effectStack.pop()//执行过的effect删除
+            activeEffect = effectStack[effectStack.length - 1]
         }
     }
-    effectFn()
+
+    if(!options.lazy){
+        // 默认执行一次
+        effectFn()
+    }
+    effectFn.scheduler = options.scheduler
     return effectFn
 }
 
-// 存储副作用函数 建立副作用和响应式数据的关系 weakmap=>map=>set
+
 // {
 // [target1]:{
 //     [key1]:set[effect1,effect2,...]
@@ -25,22 +37,23 @@ export function effect(fn) {
 //     [key2]:set[effect1,effect2,...]
 // }
 // }
+// 存储副作用函数 建立副作用和响应式数据的关系 weakmap=>map=>set
 const targetWeakMap = new WeakMap()
 
 // 收集依赖
 export function track(target, key) {
     if (!activeEffect) {
-
+        return
     }
-    // WeakMap=>map
-    let depsMap = targetWeakMap.get(target)
+
+    let depsMap = targetWeakMap.get(target) //depsMap type=>map
     if (!depsMap) {
         targetWeakMap.set(target, (depsMap = new Map()))
     }
-    // map=>set
-    let deps = depsMap.get(key)
+
+    let deps = depsMap.get(key) //deps type=>set
     if (!deps) {
-        deps.set(key, (deps = new Set()))
+        depsMap.set(key, (deps = new Set()))
     }
     deps.add(activeEffect)
 }
@@ -55,5 +68,12 @@ export function trigger(target, key) {
     if (!deps) {
         return
     }
-    deps.forEach(effectFn => effectFn())
+    // 找到依赖响应式对应属性的副作用 依次执行
+    deps.forEach(effectFn =>{
+        if(effectFn.scheduler){
+            effectFn.scheduler(effectFn)
+        }else{
+            effectFn()
+        }
+    })
 }
