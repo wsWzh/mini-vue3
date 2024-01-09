@@ -2,6 +2,7 @@ import { reactive } from "./reactive/reactive";
 import { ref } from "./reactive/ref";
 import { computed } from "./reactive/computed";
 import { effect } from "./reactive/effect";
+import { render, h, Text, Fragment } from './runtime'
 
 // const ob = (window.ob = reactice({ count: 0 ,ob:{a:1}}))
 
@@ -55,10 +56,10 @@ import { effect } from "./reactive/effect";
 //     }
 // }))
 
-const state =(window.state= reactive({
-    ok: true,
-    text: 'hello world',
-}))
+// const state = (window.state = reactive({
+//     ok: true,
+//     text: 'hello world',
+// }))
 
 // 分支切换document.body.innerHTML的值在state.ok为true时才依赖state.text fasle时state.text值改变时不应该触发更新
 // {
@@ -67,8 +68,31 @@ const state =(window.state= reactive({
 //         text:effect
 //     }
 // }
-effect(() => {
-    console.log('渲染执行', document.body)
-    document.body.innerHTML = state.ok ? state.text : 'not'
-})
+// effect(() => {
+//     console.log('渲染执行', document.body)
+//     document.body.innerHTML = state.ok ? state.text : 'not'
+// })
+
+const vnode=h('div',{
+    class:'a b',
+    style:{
+        border:'1px solid',
+        fontSize:'20px'
+    },
+    onClick:()=>console.log('click'),
+    id:'foo',
+    checked:'',
+    custom:false
+},
+[
+    h('ul',null,[
+        h('li',{style:{color:'red'}},1),
+        h('li',null,2),
+        h('li', { style: { color: 'bule' } }, 3),
+        h(Fragment,null,[h('li',null,'4'),h('li')]),
+        h('li',null,[h(Text,null,'hello word')])
+    ])
+])
+render(vnode,document.body)
+
 

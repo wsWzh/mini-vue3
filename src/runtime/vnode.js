@@ -1,4 +1,4 @@
-import {typeOf} from '../utils'
+import { typeOf } from '../utils'
 
 export const ShapeFlags = {
     ELEMENT: 1, // 00000001
@@ -17,22 +17,27 @@ export const Fragment = Symbol('Fragment')
  *
  * @param {string | Object | Text | Fragment} type
  * @param {Object | null} props
- * @param {string | Array | null} children
+ * @param {string | number | Array | null} children
  * @return VNode
  */
-export function h(type,props,children){
+export function h(type, props, children) {
     let shapeFlag = 0
-    if(typeOf(type,'string')){
-        shapeFlag=ShapeFlags.ELEMENT
-    } else if (type=== Text){
+    if (typeOf(type, 'string')) {
+        shapeFlag = ShapeFlags.ELEMENT
+    } else if (type === Text) {
         shapeFlag = ShapeFlags.TEXT
-    }else if(type===Fragment){
+    } else if (type === Fragment) {
         shapeFlag = ShapeFlags.FRAGMENT
-    }else{
+    } else {
         shapeFlag = ShapeFlags.COMPONENT//组件
     }
 
-    if (typeOf(children, 'string') || typeOf(children,'number'))
+    if (typeOf(children, 'string') || typeOf(children, 'number')) {
+        shapeFlag |= ShapeFlags.TEXT_CHILDREN
+        children = children.toString()
+    } else if (typeOf(children, 'array')) {
+        shapeFlag |= ShapeFlags.ARRAY_CHILDREN
+    }
 
     return {
         type,
