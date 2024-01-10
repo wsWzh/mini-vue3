@@ -175,7 +175,12 @@ function patchChildren(n1, n2, container, anchor) {
             mountChildren(c2, container, anchor)
         } else if (prevShapeFlag & ShapeFlags.ARRAY_CHILDREN) {
             // n1 n2都是数组
-            patchArrayChildren(c1, c2, container, anchor)
+            // 偷懒只要第一个元素有key就当做都有key
+            if (c1[0] && c1[0].key != null && c2[0] && c2[0].key != null) {
+                patchKeyedChildren(c1, c2, container, anchor)
+            } else {
+                patchUnkeyedChildren(c1, c2, container, anchor)
+            }
         } else {
             //n1是null ,n2是数组
             mountChildren(c2, container, anchor)
@@ -194,7 +199,9 @@ function patchChildren(n1, n2, container, anchor) {
     }
 }
 
-function patchArrayChildren(c1, c2, container, anchor) {
+
+// 没有key属性的对比
+function patchUnkeyedChildren(c1, c2, container, anchor) {
     const oldLength = c1.length
     const newLength = c2.length
     const commonLength = Math.min(oldLength, newLength)//取公共长度
@@ -206,4 +213,34 @@ function patchArrayChildren(c1, c2, container, anchor) {
     } else if (oldLength < newLength) {
         mountChildren(c2.slice(commonLength), container, anchor)
     }
+}
+
+// diff算法 用key属性来判断节点是否要复用
+function patchKeyedChildren(c1, c2, container, anchor) {
+    const map = new Map()
+    c1.forEach((prev, j) => map.set(prev.key, { prev, j }))
+    let maxNewIndexSoFar = 0;
+    for (let i = 0; i < c2.length; i++) {
+        const next = c2[i]
+        // 找到key相同的元素进行更新
+        if (map.has(next.key)) {
+            const { prev, j } = map.get(next.key)
+            patch(prev, next, container, anchor)
+            // 小于需要移动
+            if (j < maxNewIndexSoFar) {
+                const curAnchor = c2[i - 1].el.nextSibling
+                container.insertBefore(next.el, curAnchor)
+            } else {
+                maxNewIndexSoFar = j
+            }
+            // 更新了就删掉 剩下的就是需要unmount
+            map.delete(next.key)
+        } else {
+            // c1没找到说明是c2新增的节点要插入
+            const curAnchor = i === 0 ? c1[0].el : c2[i - 1].el.nextSibling
+            patch(null, next, container, curAnchor)
+        }
+    }
+    // 删除c1多出来的节点
+    map.forEach(({prev}) => unmount(prev))
 }
