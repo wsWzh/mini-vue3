@@ -43,6 +43,8 @@ export function h(type, props, children) {
         type,
         props,
         children,
-        shapeFlag
+        shapeFlag,
+        el: null,//删除节点要用到
+        anchor: null,//记录FRAGMENT insertBefore的位置 不然patch时会添加到末尾
     }
 }
