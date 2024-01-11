@@ -7,6 +7,10 @@ export function patchProps(oldProps, newProps, el) {
     oldProps = oldProps || {}
     newProps = newProps || {}
     for (const key in newProps) {
+        if (key === 'key') {
+            // 跳过当前循环 key不用比对
+            continue
+        }
         const next = newProps[key]
         const Prev = oldProps[key]
         if (next !== Prev) {
@@ -14,7 +18,7 @@ export function patchProps(oldProps, newProps, el) {
         }
     }
     for (const key in oldProps) {
-        if (newProps[key] == null) {
+        if (key !== 'key' && newProps[key] == null) {
             patchDomProps(oldProps[key], null, key, el)
         }
     }
