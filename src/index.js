@@ -4,6 +4,7 @@ import { computed } from "./reactive/computed";
 import { effect } from "./reactive/effect";
 import { render, h, Text, Fragment } from './runtime'
 
+//响应式
 // const ob = (window.ob = reactice({ count: 0 ,ob:{a:1}}))
 
 // effect(() => {
@@ -56,6 +57,7 @@ import { render, h, Text, Fragment } from './runtime'
 //     }
 // }))
 
+//分支切换
 // const state = (window.state = reactive({
 //     ok: true,
 //     text: 'hello world',
@@ -73,6 +75,7 @@ import { render, h, Text, Fragment } from './runtime'
 //     document.body.innerHTML = state.ok ? state.text : 'not'
 // })
 
+//render 虚拟dom
 // const vnode = h('div', {
 //     class: 'a b',
 //     style: {
@@ -95,26 +98,64 @@ import { render, h, Text, Fragment } from './runtime'
 //     ])
 // render(vnode, document.body)
 
-const n1 = h('ul', null, [
-    h('li', null, 'first'),
-    h(Fragment, null, []),
-    h('li', null, 'last')
-]
-)
+//diff算法 更新视图
+// const n1 = h('ul', null, [
+//     h('li', null, 'first'),
+//     h(Fragment, null, []),
+//     h('li', null, 'last')
+// ]
+// )
 
 
-const n2 = h('ul', null, [
-    h('li', null, 'first'),
-    h(Fragment, null, [
-        h('li', null, 'middle'),
-    ]),
-    h('li', null, 'last')
-]
+// const n2 = h('ul', null, [
+//     h('li', null, 'first'),
+//     h(Fragment, null, [
+//         h('li', null, 'middle'),
+//     ]),
+//     h('li', null, 'last')
+// ]
 
-)
-render(n1, document.body)
+// )
+// render(n1, document.body)
 
 
-setTimeout(() => {
-    render(n2, document.body)
-}, 2000)
+// setTimeout(() => {
+//     render(n2, document.body)
+// }, 2000)
+
+//组件挂载更新相关
+const Comp={
+    props:['foo'],
+    render(ctx){
+        return h('div',{class:'a',id:ctx.bar},ctx.foo)
+    }
+}
+
+const Comp1 = {
+    setup(){
+        const count=ref(0)
+        const add=()=>{
+            count.value++
+            console.log(c);
+        }
+        return {
+            count,
+            add
+        }
+    },
+    render(ctx) {
+        return [
+            h('div',null,ctx.count.value),
+            h('button',{onClick:ctx.add},'add')
+        ]
+    }
+}
+
+const vnodeProps={
+    foo:'foo',
+    bar:'bar'
+}
+
+// const vnode = h(Comp, vnodeProps)
+const vnode = h(Comp1)
+render(vnode,document.body)
