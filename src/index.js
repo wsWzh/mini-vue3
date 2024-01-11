@@ -1,7 +1,7 @@
-import { reactive } from "./reactive/reactive";
-import { ref } from "./reactive/ref";
-import { computed } from "./reactive/computed";
-import { effect } from "./reactive/effect";
+import { reactive } from "./reactivity/reactive";
+import { ref } from "./reactivity/ref";
+import { computed } from "./reactivity/computed";
+import { effect } from "./reactivity/effect";
 import { render, h, Text, Fragment } from './runtime'
 
 //响应式
