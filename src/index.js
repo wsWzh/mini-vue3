@@ -1,7 +1,4 @@
-import { reactive } from "./reactivity/reactive";
-import { ref } from "./reactivity/ref";
-import { computed } from "./reactivity/computed";
-import { effect } from "./reactivity/effect";
+import {ref} from './reactivity'
 import { render, h, Text, Fragment } from './runtime'
 
 //响应式
@@ -124,38 +121,38 @@ import { render, h, Text, Fragment } from './runtime'
 // }, 2000)
 
 //组件挂载更新相关
-const Comp={
-    props:['foo'],
-    render(ctx){
-        return h('div',{class:'a',id:ctx.bar},ctx.foo)
-    }
-}
+// const Comp={
+//     props:['foo'],
+//     render(ctx){
+//         return h('div',{class:'a',id:ctx.bar},ctx.foo)
+//     }
+// }
 
-const Comp1 = {
-    setup(){
-        const count=ref(0)
-        const add=()=>{
-            count.value++
-            console.log(c);
-        }
-        return {
-            count,
-            add
-        }
-    },
-    render(ctx) {
-        return [
-            h('div',null,ctx.count.value),
-            h('button',{onClick:ctx.add},'add')
-        ]
-    }
-}
+// const Comp1 = {
+//     setup(){
+//         const count=ref(0)
+//         const add=()=>{
+//             count.value++
+//             console.log(c);
+//         }
+//         return {
+//             count,
+//             add
+//         }
+//     },
+//     render(ctx) {
+//         return [
+//             h('div',null,ctx.count.value),
+//             h('button',{onClick:ctx.add},'add')
+//         ]
+//     }
+// }
 
-const vnodeProps={
-    foo:'foo',
-    bar:'bar'
-}
+// const vnodeProps={
+//     foo:'foo',
+//     bar:'bar'
+// }
 
-// const vnode = h(Comp, vnodeProps)
-const vnode = h(Comp1)
-render(vnode,document.body)
+// // const vnode = h(Comp, vnodeProps)
+// const vnode = h(Comp1)
+// render(vnode,document.body)

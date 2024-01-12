@@ -1,6 +1,6 @@
 import { ShapeFlags } from "./vnode"
 import { patchProps } from './patchProps'
-
+import { mountComponent } from './component'
 
 export function render(vnode, container) {
     const prevVnode = container._vnode
@@ -50,7 +50,11 @@ function unmountFragment(vnode) {
 }
 
 function processComponent(n1, n2, container, anchor) {
-
+    if (n1) {
+      //update component
+    } else {
+        mountComponent(n2, container, anchor,patch)
+    }
 }
 
 function processText(n1, n2, container, anchor) {
@@ -76,13 +80,16 @@ function processFragment(n1, n2, container, anchor) {
 }
 
 function patch(n1, n2, container, anchor) {
+    //类型不同
     if (n1 && !isSameVNode(n1, n2)) {
         anchor = (n1.anchor || n1.el).nextSibling//下一个兄弟节点
         unmount(n1) //删除时重设anchor
         n1 = null
     }
     const { shapeFlag } = n2
+    console.log(shapeFlag);
     if (shapeFlag & ShapeFlags.COMPONENT) {
+        console.log(shapeFlag,123);
         processComponent(n1, n2, container, anchor)
     } else if (shapeFlag & ShapeFlags.TEXT) {
         processText(n1, n2, container, anchor)
@@ -97,9 +104,6 @@ function patch(n1, n2, container, anchor) {
 function isSameVNode(n1, n2) {
     return n1.type === n2.type
 }
-
-
-
 
 function processElement(n1, n2, container, anchor) {
     if (n1) {
