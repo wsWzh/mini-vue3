@@ -68,7 +68,6 @@ export function track(target, key) {
     // add 处理切换分支
     // 在每次依赖执行前把该依赖从所有与之相关联的依赖存储桶删除，执行完后再重新收集依赖，确保没有不必要的依赖产生
     deps.add(activeEffect)
-    console.log(activeEffect.deps);
 }
 
 // 触发副作用函数

@@ -87,9 +87,7 @@ function patch(n1, n2, container, anchor) {
         n1 = null
     }
     const { shapeFlag } = n2
-    console.log(shapeFlag);
     if (shapeFlag & ShapeFlags.COMPONENT) {
-        console.log(shapeFlag,123);
         processComponent(n1, n2, container, anchor)
     } else if (shapeFlag & ShapeFlags.TEXT) {
         processText(n1, n2, container, anchor)
@@ -116,7 +114,6 @@ function processElement(n1, n2, container, anchor) {
 function mountTextNode(vnode, container, anchor) {
 
     const textNode = document.createTextNode(vnode.children)
-    console.log(container, vnode.children, textNode);
     container.insertBefore(textNode, anchor)
     vnode.el = textNode//删除节点要用到
 }

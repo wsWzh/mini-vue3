@@ -46,6 +46,19 @@ export function h(type, props, children) {
         shapeFlag,
         el: null,//删除节点要用到
         anchor: null,//记录FRAGMENT insertBefore的位置 不然patch时会添加到末尾
-        key:porps&&props.key,//key的作用是更新时判断是否是同一个节点
+        key:props&&props.key,//key的作用是更新时判断是否是同一个节点
     }
+}
+
+export function normalizeVNode(result){
+    // 数组添加一个的根节点
+    if(typeOf(result, 'array')){
+        return h(Fragment,null,result)
+    }
+    // 对象说明是标准vnode
+    if(typeOf(result, 'object')){
+        return result
+    }
+    // 字符串或者数字
+    return h(Text,null,result.toString())
 }

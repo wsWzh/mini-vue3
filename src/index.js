@@ -121,38 +121,38 @@ import { render, h, Text, Fragment } from './runtime'
 // }, 2000)
 
 //组件挂载更新相关
-// const Comp={
-//     props:['foo'],
-//     render(ctx){
-//         return h('div',{class:'a',id:ctx.bar},ctx.foo)
-//     }
-// }
+const Comp={
+    props:['foo'],
+    render(ctx){
+        return h('div',{class:'a',id:ctx.bar},ctx.foo)
+    }
+}
 
-// const Comp1 = {
-//     setup(){
-//         const count=ref(0)
-//         const add=()=>{
-//             count.value++
-//             console.log(c);
-//         }
-//         return {
-//             count,
-//             add
-//         }
-//     },
-//     render(ctx) {
-//         return [
-//             h('div',null,ctx.count.value),
-//             h('button',{onClick:ctx.add},'add')
-//         ]
-//     }
-// }
+const Comp1 = {
+    setup(){
+        const count=ref(0)
+        const add=()=>{
+            count.value++
+            console.log(count.value);
+        }
+        return {
+            count,
+            add
+        }
+    },
+    render(ctx) {
+        return [
+            h('div',null,ctx.count.value),//这里相当于模板为什么要加value 因为vue对setup返回的属性做了特殊处理
+            h('button', { onClick: ctx.add }, `add` + `${ctx.count.value}`)
+        ]
+    }
+}
 
-// const vnodeProps={
-//     foo:'foo',
-//     bar:'bar'
-// }
+const vnodeProps={
+    foo:'foo',
+    bar:'bar'
+}
 
-// // const vnode = h(Comp, vnodeProps)
-// const vnode = h(Comp1)
-// render(vnode,document.body)
+// const vnode = h(Comp, vnodeProps)
+const vnode = h(Comp1)
+render(vnode,document.body)
