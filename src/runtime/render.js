@@ -159,15 +159,14 @@ function patchChildren(n1, n2, container, anchor) {
         if (prevShapeFlag & ShapeFlags.TEXT_CHILDREN) {
             // n1 n2都是text类型
             if (c1 !== c2) {
-                container.textContent = c2.textContent
+                container.textContent = c2
             }
         } else if (prevShapeFlag & ShapeFlags.ARRAY_CHILDREN) {
             //n1是数组 n2是text
-            unmountChildren(c1)
-            container.textContent = c2.textContent
+            container.textContent = c2
         } else {
             //n1是null n2是text
-            container.textContent = c2.textContent
+            container.textContent = c2
         }
     } else if (shapeFlag & ShapeFlags.ARRAY_CHILDREN) {
         if (prevShapeFlag & ShapeFlags.TEXT_CHILDREN) {

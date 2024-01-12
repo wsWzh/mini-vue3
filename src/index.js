@@ -154,5 +154,12 @@ const vnodeProps={
 }
 
 // const vnode = h(Comp, vnodeProps)
-const vnode = h(Comp1)
-render(vnode,document.body)
+// const vnode = h(Comp1)
+// render(vnode,document.body)
+
+const c1 = h('div', null, null)
+const c2 = h('div', null, 'c2')
+render(c1,document.body)
+setTimeout(()=>{
+    render(c2, document.body)
+},3000)
