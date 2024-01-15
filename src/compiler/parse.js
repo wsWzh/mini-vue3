@@ -37,6 +37,31 @@ function parseChildren(context) {
         }
         nodes.push(node)
     }
+    let removeWhiteSpace = false
+    for (let i = 0; i < nodes.length; i++) {
+        const node = nodes[i]
+        // 处理文本节点
+        if (node.type === NodeTypes.TEXT) {
+            // 区分文本节点是否全是空白 匹配非[]里的值[^]
+            if (/[^\t\r\f\n ]+/.test(node.content)) {
+                // 文本节点有一些字符
+                node.content = node.content.replace(/[\t\r\f\n ]/g, ' ')//去除多余空白
+            } else {
+                // 文本节点全是空白
+                const prev = node[i - 1]
+                const next = node[i + 1]
+                if (!prev || !next || (prev.type !== NodeTypes.TEXT && next.type !== NodeTypes.TEXT && /[\r\n]/.test(prev.content))) {
+                    // 删除空白节点 这里不能直接删除不然i会变
+                    node[i] = null
+                    removeWhiteSpace = true
+                } else {
+                    // 替换成空格
+                    node.content = ' '
+                }
+            }
+        }
+    }
+    removeWhiteSpace && (nodes = nodes.filter(node => node !== null))
     return nodes
 }
 
@@ -84,6 +109,7 @@ function parseInterpolation(context) {
         isStatic: false//是否静态
     }
 }
+
 function parseElement(context) {
     const element = parseTag(context)//标签开始
     if (element.isSelfClosing || context.options.isVoidTag(element.tag)) {
@@ -107,7 +133,6 @@ function parseTag(context) {
     advanceSpaces(context)//吃掉空格 <div   id=xxx
 
     const { props, directives } = parseAttributes(context)//获取props 指令
-
     const isSelfClosing = context.source.startsWith('/>')
     advanceBy(context, isSelfClosing ? 2 : 1)
 
@@ -130,17 +155,16 @@ function isComponent(tag, context) {
 
 function parseAttributes(context) {
     const props = []
-    const direction = []
+    const directives = []
     while (context.source.length && !context.source.startsWith('>') && !context.source.startsWith('/>')) {
-        const s = context.source
         let attr = parseAttribute(context)
         if (attr.type === NodeTypes.DIRECTIVE) {
-            direction.push(attr)
+            directives.push(attr)
         } else {
             props.push(attr)
         }
     }
-    return { props, direction }
+    return { props, directives }
 }
 
 function parseAttribute(context) {
@@ -159,7 +183,7 @@ function parseAttribute(context) {
     }
 
     //directive
-    if (/^(:|@|v-)/.text(name)) {
+    if (/^(:|@|v-)/.test(name)) {
         let dirName, argContent
         if (name[0] === ':') {
             dirName = 'bind'

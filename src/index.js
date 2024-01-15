@@ -1,5 +1,6 @@
 import {ref} from './reactivity'
 import { render, h, Text, Fragment, nextTick,createApp } from './runtime'
+import { parse } from './compiler'
 
 //响应式
 // const ob = (window.ob = reactice({ count: 0 ,ob:{a:1}}))
@@ -204,3 +205,7 @@ createApp({
         ]
     }
 }).mount(document.body)
+
+// 模板编译
+
+console.log(parse('<div id="foo" v-if="ok" >hello {{name}}</div>'));
