@@ -24,3 +24,11 @@ export function hasChange(oldValue, value) {
     //NaN特殊处理
     return oldValue !== value && (!Number.isNaN(oldValue) && !Number.isNaN(value))
 }
+
+export function camelize(str) {
+    // my-first-name-=>MyFirstName 最后有个-没有捕获到分组
+    // _ 匹配到的内容 -f -n ,c分组的内容
+    return str.replace(/-(\w)/g, (_, c) => c && c.toUpperCase())
+}
+
+
