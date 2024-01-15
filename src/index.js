@@ -1,5 +1,5 @@
 import {ref} from './reactivity'
-import { render, h, Text, Fragment } from './runtime'
+import { render, h, Text, Fragment, nextTick,createApp } from './runtime'
 
 //响应式
 // const ob = (window.ob = reactice({ count: 0 ,ob:{a:1}}))
@@ -121,19 +121,76 @@ import { render, h, Text, Fragment } from './runtime'
 // }, 2000)
 
 //组件挂载更新相关
-const Comp={
-    props:['foo'],
-    render(ctx){
-        return h('div',{class:'a',id:ctx.bar},ctx.foo)
-    }
-}
+// const Comp={
+//     props:['foo'],
+//     render(ctx){
+//         return h('div',{class:'a',id:ctx.bar},ctx.foo)
+//     }
+// }
 
-const Comp1 = {
-    setup(){
-        const count=ref(0)
-        const add=()=>{
+// const Comp1 = {
+//     setup(){
+//         const count=ref(0)
+//         const add=()=>{
+//             count.value++
+//             count.value++
+//             count.value++
+//             console.log(count.value,'会触发三次render');
+//             // 应该等add函数执行完成才触发组件的update
+//             // 利用js事件队列 将update推到事件队列 当主线程更新代码执行完毕才执行任务队列的update
+//         }
+//         return {
+//             count,
+//             add
+//         }
+//     },
+//     render(ctx) {
+//         return [
+//             h('div',{id:'div'},ctx.count.value),//这里相当于模板为什么要加value 因为vue对setup返回的属性做了特殊处理
+//             h('button', { id:'btn',onClick: ctx.add }, `add` + `${ctx.count.value}`)
+//         ]
+//     }
+// }
+
+
+
+// const vnodeProps={
+//     foo:'foo',
+//     bar:'bar'
+// }
+
+// // const vnode = h(Comp, vnodeProps)
+// const vnode = h(Comp1)
+// render(vnode, document.body)
+// const div = document.getElementById('div')
+// const btn = document.getElementById('btn')
+
+// btn.click()
+// console.log(div.innerHTML);//执行click更新了count还是打印0
+
+// nextTick(()=>{
+//     console.log(div.innerHTML)//这里也更新了
+// })
+
+// await nextTick()
+// console.log(div.innerHTML)//这里也更新了
+
+// setTimeout(()=>{
+//     console.log(div.innerHTML)//这里就更新了 在vue源码是在netTick才能获取更新后的dom
+// })
+
+
+// createApp相关
+createApp({
+    setup() {
+        const count = ref(0)
+        const add = () => {
             count.value++
-            console.log(count.value);
+            count.value++
+            count.value++
+            console.log(count.value, '会触发三次render');
+            // 应该等add函数执行完成才触发组件的update
+            // 利用js事件队列 将update推到事件队列 当主线程更新代码执行完毕才执行任务队列的update
         }
         return {
             count,
@@ -142,24 +199,8 @@ const Comp1 = {
     },
     render(ctx) {
         return [
-            h('div',null,ctx.count.value),//这里相当于模板为什么要加value 因为vue对setup返回的属性做了特殊处理
-            h('button', { onClick: ctx.add }, `add` + `${ctx.count.value}`)
+            h('div', { id: 'div' }, ctx.count.value),//这里相当于模板为什么要加value 因为vue对setup返回的属性做了特殊处理
+            h('button', { id: 'btn', onClick: ctx.add }, `add` + `${ctx.count.value}`)
         ]
     }
-}
-
-const vnodeProps={
-    foo:'foo',
-    bar:'bar'
-}
-
-// const vnode = h(Comp, vnodeProps)
-// const vnode = h(Comp1)
-// render(vnode,document.body)
-
-const c1 = h('div', null, null)
-const c2 = h('div', null, 'c2')
-render(c1,document.body)
-setTimeout(()=>{
-    render(c2, document.body)
-},3000)
+}).mount(document.body)

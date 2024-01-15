@@ -27,7 +27,7 @@ function unmount(vnode) {
 }
 
 function unmountComponent(vnode) {
-
+    unmount(vnode.component.subTree)
 }
 
 function unmountChildren(children) {
@@ -51,10 +51,16 @@ function unmountFragment(vnode) {
 
 function processComponent(n1, n2, container, anchor) {
     if (n1) {
-      //update component
+        updateComponent(n1, n2)
     } else {
-        mountComponent(n2, container, anchor,patch)
+        mountComponent(n2, container, anchor, patch)
     }
+}
+
+function updateComponent(n1, n2) {
+    n2.component = n1.component
+    n2.component.next = n2
+    n2.component.update()
 }
 
 function processText(n1, n2, container, anchor) {

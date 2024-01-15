@@ -44,9 +44,10 @@ export function h(type, props, children) {
         props,
         children,
         shapeFlag,
-        el: null,//删除节点要用到
+        el: null,//对应的真实dom 删除节点要用到
         anchor: null,//记录FRAGMENT insertBefore的位置 不然patch时会添加到末尾
         key:props&&props.key,//key的作用是更新时判断是否是同一个节点
+        component:null,//存储组件实例
     }
 }
 

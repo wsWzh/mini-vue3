@@ -1,7 +1,8 @@
 import { effect, reactive } from "../reactivity"
 import { normalizeVNode } from "./vnode"
+import { queueJob } from "./scheduler"
 
-function initProps(instance, vnode) {
+function updateProps(instance, vnode) {
     const { type: Component, props: vnodeProps } = vnode
 
     const props = instance.props = {}
@@ -17,23 +18,31 @@ function initProps(instance, vnode) {
     instance.props = reactive(instance.props)//响应式 修改props也要触发更新
 }
 
+function fallThrough(instance, subTree) {
+    if (Object.keys(instance.attrs).length) {
+        // 继承attrs
+        subTree.props = { ...subTree.props, ...instance.attrs }
+    }
+}
+
 export function mountComponent(vnode, container, anchor, patch) {
 
     const { type: Component } = vnode
 
     //状态组件 实例
-    const instance = {
+    const instance = (vnode.component = {
         props: null,
         attrs: null,
         setupState: null,
         ctx: null,
         subTree: null,//记录第一次挂载的结果 用于更新时比对
-        isMount:false,//是否已经挂载
+        isMount: false,//是否已经挂载
         mount: null,
         update: null,//组件更新
-    }
+        next: null,//存储n2
+    })
 
-    initProps(instance, vnode)
+    updateProps(instance, vnode)
 
     instance.setupState = Component.setup?.(instance.props, { attrs: instance.attrs })
 
@@ -43,42 +52,38 @@ export function mountComponent(vnode, container, anchor, patch) {
         ...instance.setupState,
     }
 
-    instance.mount = () => {
-
-    }
-
-    instance.mount()
-
     //effect 默认执行一次 代替mount
-    instance.update =effect(() => {
-        if(!instance.isMount){
+    instance.update = effect(() => {
+
+        if (!instance.isMount) {
             //挂载
             // 返回不一定是标准的vnode 对不同类型的返回进行处理
             const subTree = (instance.subTree = normalizeVNode(Component.render(instance.ctx)))
-
-            if (Object.keys(instance.attrs).length) {
-                // 继承attrs
-                subTree.props = { ...subTree.props, ...instance.attrs }
+            fallThrough(instance, subTree)
+            patch(null, subTree, container, anchor)
+            vnode.el = subTree.el
+            instance.isMount = true
+        } else {
+            //更新
+            if (instance.next) {
+                //被动更新
+                vnode = instance.next
+                instance.next = null//防止影响主动更新
+                updateProps(instance, vnode)
+                instance.ctx = {
+                    ...instance.props,
+                    ...instance.setupState,
+                }
             }
 
-            patch(null, subTree, container, anchor)
-            instance.isMount = true
-        }else{
-            //更新
             const prev = instance.subTree
-            console.log('更新', prev);
             // 返回不一定是标准的vnode 对不同类型的返回进行处理
             const subTree = normalizeVNode(Component.render(instance.ctx))
-
-            if (Object.keys(instance.attrs).length) {
-                // 继承attrs
-                subTree.props = { ...subTree.props, ...instance.attrs }
-            }
-
+            fallThrough(instance, subTree)
             patch(prev, subTree, container, anchor)
+            vnode.el = subTree.el
         }
 
-    })
-
+    }, { scheduler : queueJob })
 
 }
