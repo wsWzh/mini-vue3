@@ -6,7 +6,7 @@ export function generate(ast) {
     const returns = traverseNode(ast)
     const code = `
     with(ctx){
-        const {h,Text,Fragment} = MiniVue
+        const {h,Text,Fragment,renderList} = MiniVue
         return ${returns}
     }
     `
@@ -41,11 +41,22 @@ function createText({ isStatic = true, content = '' } = {}) {
 
 // 专门处理特殊指令
 function resolveElementASTNode(node) {
-    const forNode = pluck(node.directives, 'for')
+
+    const ifNode = pluck(node.directives, 'if', true)
+    if (ifNode) {
+        // v-if="ok"=>ok?h('div):h('text',null,'')
+        const { exp } = ifNode
+        let conditin = exp.content//ok
+        let consequent = resolveElementASTNode(node)//这里可能有别的指令例如v-if和v-for在同一个节点 所以要递归
+        let alternate = createTextVNode()
+        return `${conditin} ? ${consequent} : ${alternate}`
+    }
+
+    const forNode = pluck(node.directives, 'for', true)
     if (forNode) {
         const { exp } = forNode
         const [args, source] = exp.content.split(/\sin\s/ || /\sof\s/)
-        return `h(Tragment,null,renderList(${source.trim()},${args.trim()} => ${createElementVNode(node)}))`
+        return `h(Fragment,null,renderList(${source.trim()},${args.trim()} => ${resolveElementASTNode(node)}))`
     }
     return createElementVNode(node)
 }

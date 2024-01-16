@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+</body>
+
+</html>
+<script src="../../dist/mini-vue.js"></script>
+
+<body>
+    <!-- 写法3直接写在根组件 -->
+    <div id="app">
+        <h3>v-for</h3>
+      <ul>
+        <li v-for="(item,index) in items" :key="item.name">{{index}}:{{item.name}}</li>
+      </ul>
+        <h3>v-if</h3>
+      <div v-if="ok.value">123</div>{{ok.value}}
+      <button @click="setOk">setOk</button>
+    </div>
+
+    <script>
+        const { createApp, h, ref,reactive } = MiniVue
+        createApp({
+            setup() {
+                const items= reactive([{name:'foo'},{name:'bar'}])
+                const count = ref(0)
+                const ok = ref(false)
+                const setOk= ()=>ok.value=!ok.value
+                function add() {
+                    count.value++
+                }
+                return {
+                    count,
+                    add,
+                    items,
+                    ok,
+                    setOk
+                }
+            }
+        }).mount('#app')
+    </script>
+</body>
+<style>
+
+</style>
