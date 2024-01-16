@@ -22,7 +22,7 @@ function traverseNode(node) {
             const result = traverseChildren(node)
             return result
         case NodeTypes.ELEMENT:
-            return createElementVNode(node)
+            return resolveElementASTNode(node)
         case NodeTypes.INTERPOLATION:
             return createTextVNode(node.content)
         case NodeTypes.TEXT:
@@ -37,6 +37,17 @@ function createTextVNode(node) {
 
 function createText({ isStatic = true, content = '' } = {}) {
     return isStatic ? JSON.stringify(content) : content
+}
+
+// 专门处理特殊指令
+function resolveElementASTNode(node) {
+    const forNode = pluck(node.directives, 'for')
+    if (forNode) {
+        const { exp } = forNode
+        const [args, source] = exp.content.split(/\sin\s/ || /\sof\s/)
+        return `h(Tragment,null,renderList(${source.trim()},${args.trim()} => ${createElementVNode(node)}))`
+    }
+    return createElementVNode(node)
 }
 
 function createElementVNode(node) {
@@ -100,4 +111,13 @@ function traverseChildren(node) {
         results.push(result)
     }
     return `[${results.join(',')}]`
+}
+
+function pluck(directives, name, remove = true) {
+    const index = directives.findIndex(dir => dir.name === name)
+    const dir = directives[index]
+    if (index > -1 && remove) {
+        directives.splice(index, 1)
+    }
+    return dir
 }
