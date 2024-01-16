@@ -28,7 +28,7 @@ function parseChildren(context) {
         if (s.startsWith(context.options.delimiters[0])) {
             //处理插值语法
             node = parseInterpolation(context)
-        } else if (s.startsWith('<')) {
+        } else if (s[0] === '<') {
             // 处理html标签
             node = parseElement(context)
         } else {
@@ -61,8 +61,7 @@ function parseChildren(context) {
             }
         }
     }
-    removeWhiteSpace && (nodes = nodes.filter(node => node !== null))
-    return nodes
+    return removeWhiteSpace ? nodes.filter(node => node !== null) : nodes
 }
 
 // 缺陷:不支持文本节点中带<
@@ -105,8 +104,11 @@ function parseInterpolation(context) {
 
     return {
         type: NodeTypes.INTERPOLATION,
-        content,
-        isStatic: false//是否静态
+        content: {
+            type: NodeTypes.SIMPLE_EXPRESSION,
+            content,
+            isStatic: false,
+        },
     }
 }
 
@@ -125,7 +127,6 @@ function parseElement(context) {
 function parseTag(context) {
     //匹配<或者</开头 首位为a-z后续不是空白符或者标签结束符合
     const match = /^<\/?([a-z][^\t\r\n\f />]*)/i.exec(context.source)
-
     const tag = match[1]
 
     advanceBy(context, match[0].length)

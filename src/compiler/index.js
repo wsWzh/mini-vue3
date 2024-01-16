@@ -23,3 +23,4 @@ export const isVoidTag = makeMap(VOID_TAGS);
 export const isNativeTag = makeMap(HTML_TAGS);
 
 export { parse } from './parse'
+export { compile } from './compile'

@@ -1,6 +1,20 @@
-import {ref} from './reactivity'
-import { render, h, Text, Fragment, nextTick,createApp } from './runtime'
-import { parse } from './compiler'
+import { ref, reactive, computed, effect } from './reactivity'
+import { render, h, Text, Fragment, nextTick, createApp } from './runtime'
+import { parse, compile } from './compiler'
+export const MiniVue = (window.MiniVue = {
+    ref,
+    reactive,
+    computed,
+    effect,
+    render,
+    h,
+    Text,
+    Fragment,
+    nextTick,
+    createApp,
+    parse,
+    compile
+})
 
 //响应式
 // const ob = (window.ob = reactice({ count: 0 ,ob:{a:1}}))
@@ -182,29 +196,29 @@ import { parse } from './compiler'
 
 
 // createApp相关
-createApp({
-    setup() {
-        const count = ref(0)
-        const add = () => {
-            count.value++
-            count.value++
-            count.value++
-            console.log(count.value, '会触发三次render');
-            // 应该等add函数执行完成才触发组件的update
-            // 利用js事件队列 将update推到事件队列 当主线程更新代码执行完毕才执行任务队列的update
-        }
-        return {
-            count,
-            add
-        }
-    },
-    render(ctx) {
-        return [
-            h('div', { id: 'div' }, ctx.count.value),//这里相当于模板为什么要加value 因为vue对setup返回的属性做了特殊处理
-            h('button', { id: 'btn', onClick: ctx.add }, `add` + `${ctx.count.value}`)
-        ]
-    }
-}).mount(document.body)
+// createApp({
+//     setup() {
+//         const count = ref(0)
+//         const add = () => {
+//             count.value++
+//             count.value++
+//             count.value++
+//             console.log(count.value, '会触发三次render');
+//             // 应该等add函数执行完成才触发组件的update
+//             // 利用js事件队列 将update推到事件队列 当主线程更新代码执行完毕才执行任务队列的update
+//         }
+//         return {
+//             count,
+//             add
+//         }
+//     },
+//     render(ctx) {
+//         return [
+//             h('div', { id: 'div' }, ctx.count.value),//这里相当于模板为什么要加value 因为vue对setup返回的属性做了特殊处理
+//             h('button', { id: 'btn', onClick: ctx.add }, `add` + `${ctx.count.value}`)
+//         ]
+//     }
+// }).mount(document.body)
 
 // 模板编译
 

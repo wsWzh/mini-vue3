@@ -9,11 +9,49 @@
 
 <body>
 </body>
+<a href="./template-explorer/index.html">模板编译</a>
 
 </html>
 <script src="../../dist/mini-vue.js"></script>
+
+<body>
+    <!-- 写法3直接写在根组件 -->
+    <div id="app">
+        Counter
+        <div>{{count.value}}</div>
+        <button @click='add'>click</button>
+    </div>
+    <script type="text/template" id="template">
+        Counter
+        <div>{{count.value}}</div>
+        <button @click='add'>click</button>
+    </script>
+    <script>
+        const { createApp, h, ref } = MiniVue
+        createApp({
+            // 写法1
+            // template: `
+            //     Counter
+            //     <div>{{count.value}}</div>
+            //     <button @click='add'>click</button>
+            //     `,
+            // 写法2
+            // template:'#template',
+            setup() {
+                const count = ref(0)
+                function add() {
+                    count.value++
+                }
+                return {
+                    count,
+                    add
+                }
+            }
+        }).mount('#app')
+    </script>
+</body>
 <style>
-.a{
-    background-color: aqua;
-}
+    .a {
+        background-color: aqua;
+    }
 </style>
