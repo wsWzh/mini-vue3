@@ -21,8 +21,11 @@
         <li v-for="(item,index) in items" :key="item.name">{{index}}:{{item.name}}</li>
       </ul>
         <h3>v-if</h3>
-      <div v-if="ok.value">123</div>{{ok.value}}
-      <button @click="setOk">setOk</button>
+      <div v-if="ok.value">123</div>
+      <button @click="setOk">{{ok.value?'hidden':'show'}}</button>
+        <h3>v-model</h3>
+        <div>text:{{text.value}}</div>
+      <input type="text" v-model="text.value">
     </div>
 
     <script>
@@ -36,12 +39,14 @@
                 function add() {
                     count.value++
                 }
+                const text=ref('hellp')
                 return {
                     count,
                     add,
                     items,
                     ok,
-                    setOk
+                    setOk,
+                    text
                 }
             }
         }).mount('#app')

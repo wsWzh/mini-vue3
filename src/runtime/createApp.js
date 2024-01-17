@@ -1,4 +1,4 @@
-import { typeOf } from '../utils'
+import { camelize, capitalize, typeOf } from '../utils'
 import { h, render } from './index'
 
 let components;
@@ -20,3 +20,9 @@ export function createApp(rootComponent) {
 
     return app
 }
+
+export function resolveComponent(name) {
+    return components && (components[name] || components[camelize(name)] || components[capitalize(camelize(name))])
+}
+
+// tree-item treeItem TreeItem支持组件三种写法

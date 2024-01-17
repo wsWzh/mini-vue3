@@ -8,7 +8,6 @@ function updateProps(instance, vnode) {
 
     const props = (instance.props = {})
     const attrs = (instance.attrs = {})
-
     for (const key in vnodeProps) {
         if (Component.props?.includes(key)) {
             props[key] = vnodeProps[key]
@@ -69,7 +68,7 @@ export function mountComponent(vnode, container, anchor, patch) {
             //挂载
             // 返回不一定是标准的vnode 对不同类型的返回进行处理
             const subTree = (instance.subTree = normalizeVNode(Component.render(instance.ctx)))
-
+            console.log(subTree, 123);
             fallThrough(instance, subTree)
 
             patch(null, subTree, container, anchor)
@@ -93,7 +92,7 @@ export function mountComponent(vnode, container, anchor, patch) {
             const prev = instance.subTree
 
             // 返回不一定是标准的vnode 对不同类型的返回进行处理
-            const subTree = normalizeVNode(Component.render(instance.ctx))
+            const subTree = (instance.subTree = normalizeVNode(Component.render(instance.ctx)))
 
             fallThrough(instance, subTree)
 
