@@ -37,6 +37,7 @@ function parseChildren(context) {
         }
         nodes.push(node)
     }
+
     let removedWhitespaces = false
     for (let i = 0; i < nodes.length; i++) {
         const node = nodes[i]
@@ -48,12 +49,12 @@ function parseChildren(context) {
                 node.content = node.content.replace(/[\t\r\f\n ]+/g, ' ')//去除多余空白
             } else {
                 // 文本节点全是空白
-                const prev = node[i - 1]
-                const next = node[i + 1]
+                const prev = nodes[i - 1]
+                const next = nodes[i + 1]
                 if (!prev || !next || (prev.type === NodeTypes.ELEMENT && next.type === NodeTypes.ELEMENT && /[\r\n]/.test(node.content))) {
                     // 删除空白节点 这里不能直接删除不然i会变
                     removedWhitespaces = true
-                    node[i] = null
+                    nodes[i] = null
                 } else {
                     // 替换成空格
                     node.content = ' '
@@ -61,7 +62,6 @@ function parseChildren(context) {
             }
         }
     }
-    console.log(123, removedWhitespaces ? nodes.filter(node => node !== null) : nodes);
     return removedWhitespaces ? nodes.filter(node => node !== null) : nodes
 }
 
