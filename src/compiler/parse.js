@@ -37,23 +37,23 @@ function parseChildren(context) {
         }
         nodes.push(node)
     }
-    let removeWhiteSpace = false
+    let removedWhitespaces = false
     for (let i = 0; i < nodes.length; i++) {
         const node = nodes[i]
         // 处理文本节点
         if (node.type === NodeTypes.TEXT) {
             // 区分文本节点是否全是空白 匹配非[]里的值[^]
-            if (/[^\t\r\f\n ]+/.test(node.content)) {
+            if (/[^\t\r\f\n ]/.test(node.content)) {
                 // 文本节点有一些字符
-                node.content = node.content.replace(/[\t\r\f\n ]/g, ' ')//去除多余空白
+                node.content = node.content.replace(/[\t\r\f\n ]+/g, ' ')//去除多余空白
             } else {
                 // 文本节点全是空白
                 const prev = node[i - 1]
                 const next = node[i + 1]
-                if (!prev || !next || (prev.type !== NodeTypes.TEXT && next.type !== NodeTypes.TEXT && /[\r\n]/.test(prev.content))) {
+                if (!prev || !next || (prev.type === NodeTypes.TEXT && next.type === NodeTypes.TEXT && /[\r\n]/.test(prev.content))) {
                     // 删除空白节点 这里不能直接删除不然i会变
+                    removedWhitespaces = true
                     node[i] = null
-                    removeWhiteSpace = true
                 } else {
                     // 替换成空格
                     node.content = ' '
@@ -61,7 +61,8 @@ function parseChildren(context) {
             }
         }
     }
-    return removeWhiteSpace ? nodes.filter(node => node !== null) : nodes
+    console.log(123, removedWhitespaces ? nodes.filter(node => node !== null) : nodes);
+    return removedWhitespaces ? nodes.filter(node => node !== null) : nodes
 }
 
 // 缺陷:不支持文本节点中带<

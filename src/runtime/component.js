@@ -68,7 +68,6 @@ export function mountComponent(vnode, container, anchor, patch) {
             //挂载
             // 返回不一定是标准的vnode 对不同类型的返回进行处理
             const subTree = (instance.subTree = normalizeVNode(Component.render(instance.ctx)))
-            console.log(subTree, 123);
             fallThrough(instance, subTree)
 
             patch(null, subTree, container, anchor)
