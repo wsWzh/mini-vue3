@@ -9,18 +9,24 @@
 
 <body>
 </body>
-<a href="./template-explorer/index.html">模板编译</a>
-<a href="./test.html">测试</a>
-<a href="./tree.html">树</a>
-<a href="./markdown.html">markdown模板</a>
-<a href="./todomvc.html">待办事项案例</a>
+<h1>示例</h1>
+<div style="display: flex;flex-direction: column;line-height: 2;">
+    <a href="./template-explorer/index.html">模板编译</a>
+    <a href="./test.html">测试指令</a>
+    <a href="./tree.html">树</a>
+    <a href="./markdown.html">markdown模板</a>
+    <a href="./todomvc.html">待办事项案例</a>
+    <a href="./grid.html">网格布局</a>
+    <a href="./vModel.html">双向数据绑定</a>
+</div>
 
 </html>
 <script src="../../dist/mini-vue.js"></script>
 
-<body>
+<body >
+    <h1 style="margin-top: 50px;">测试写法</h1>
     <!-- 写法3直接写在根组件 -->
-    <div id="app">
+    <div id="app" >
         Counter
         <div>{{count.value}}</div>
         <button @click='add'>click</button>
