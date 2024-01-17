@@ -72,6 +72,7 @@ export function track(target, key) {
 
 // 触发副作用函数
 export function trigger(target, key) {
+    console.log(targetWeakMap, 123);
     const depsMap = targetWeakMap.get(target)
     if (!depsMap) {
         return

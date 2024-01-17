@@ -1,5 +1,5 @@
 import { ref, reactive, computed, effect } from './reactivity'
-import { render, h, Text, Fragment, nextTick, createApp, renderList, resolveComponent } from './runtime'
+import { render, h, Text, Fragment, nextTick, createApp, renderList, resolveComponent, withModel } from './runtime'
 import { parse, compile } from './compiler'
 export const MiniVue = (window.MiniVue = {
     ref,
@@ -15,7 +15,8 @@ export const MiniVue = (window.MiniVue = {
     parse,
     compile,
     renderList,
-    resolveComponent
+    resolveComponent,
+    withModel
 })
 
 //响应式

@@ -6,7 +6,7 @@ export function generate(ast) {
     const returns = traverseNode(ast)
     const code = `
     with(ctx){
-        const {h,Text,Fragment,renderList,resolveComponent} = MiniVue
+        const {h,Text,Fragment,renderList,resolveComponent,withModel} = MiniVue
         return ${returns}
     }
     `
@@ -93,35 +93,16 @@ function createElementVNode(node) {
     const { children ,tagType} = node
     //stringify加冒号 组件是对象不能string化
     const tag =tagType===ElementTypes.ELEMENT? `'${node.tag}'`:`resolveComponent('${node.tag}')`
+    const propArr = createPropArr(node)
+    let propStr = propArr ? `{${propArr.join(',')}}` : null
     // h('div')
     //h(Com) 渲染组件Com是个对象
     const vModel=pluck(node.directives,'model',true)
-    if (vModel){
-        node.directives.push({
-            type:NodeTypes.DIRECTIVE,
-            name:'bind',
-            exp:vModel.exp,
-            arg:{
-                type:NodeTypes.SIMPLE_EXPRESSION,
-                content:'value',
-                isStatic:true
-            }
-        },{
-            type:NodeTypes.DIRECTIVE,
-            name:'on',
-            exp:{
-                type:NodeTypes.SIMPLE_EXPRESSION,
-                content:`($event)=>${vModel.exp.content}=$event.target.value`,
-            },
-            arg:{
-                type:NodeTypes.SIMPLE_EXPRESSION,
-                content:'input',
-                isStatic:true
-            }
-        })
+    if (vModel) {
+        const getter = `() => ${createText(vModel.exp)}`;
+        const setter = `value => ${createText(vModel.exp)} = value`;
+        propStr = `withModel(${tag}, ${propStr}, ${getter}, ${setter})`;
     }
-    const propArr = createPropArr(node)
-    const propStr = propArr ? `{${propArr.join(',')}}` : null
 
     if (!children) {
         if (propStr === 'null') {
@@ -150,7 +131,7 @@ function createPropArr(node) {
                     }
                     return `${eventName}:${exp}`
                 case 'html':
-                    return `innerHtml:${createText(dir.exp)}`
+                    return `innerHTML:${createText(dir.exp)}`
                 default:
                     return `${dir.name}:${createText(dir.exp)}`
             }
