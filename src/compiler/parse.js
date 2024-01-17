@@ -50,7 +50,7 @@ function parseChildren(context) {
                 // 文本节点全是空白
                 const prev = node[i - 1]
                 const next = node[i + 1]
-                if (!prev || !next || (prev.type === NodeTypes.TEXT && next.type === NodeTypes.TEXT && /[\r\n]/.test(prev.content))) {
+                if (!prev || !next || (prev.type === NodeTypes.ELEMENT && next.type === NodeTypes.ELEMENT && /[\r\n]/.test(node.content))) {
                     // 删除空白节点 这里不能直接删除不然i会变
                     removedWhitespaces = true
                     node[i] = null
