@@ -4,7 +4,7 @@ let activeEffect //记录当前活动的副作用
 // 从依赖存储桶中删除依赖
 function clear(effectFn) {
     effectFn.deps.forEach(effectSet => {
-        effectSet.delete(effectFn)
+        effectSet.delete(effectFn)//在这里重置依赖
     })
     effectFn.deps.clear()
 }
@@ -68,6 +68,7 @@ export function track(target, key) {
     // add 处理切换分支
     // 在每次依赖执行前把该依赖从所有与之相关联的依赖存储桶删除，执行完后再重新收集依赖，确保没有不必要的依赖产生
     deps.add(activeEffect)
+    activeEffect.deps.add(deps)
 }
 
 // 触发副作用函数
